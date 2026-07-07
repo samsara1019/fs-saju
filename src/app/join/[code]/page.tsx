@@ -1,6 +1,22 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTeamByCode, listMembers } from "@/lib/db";
 import JoinForm from "@/components/JoinForm";
+
+// 초대 링크 미리보기(카톡 등)용 제목은 제공하되, 팀 코드가 노출되는 페이지라 색인은 막는다.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}): Promise<Metadata> {
+  const { code } = await params;
+  const team = await getTeamByCode(code);
+  return {
+    title: team ? `${team.name} 팀에 참가하기` : "팀 참가",
+    description: "생년월일을 입력하고 우리 팀 사주 궁합 분석에 합류하세요.",
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function JoinPage({
   params,

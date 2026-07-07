@@ -15,6 +15,20 @@ import MemberActions from "@/components/MemberActions";
 
 export const dynamic = "force-dynamic";
 
+// 팀 코드가 URL에 노출되는 사실상 비공개 페이지 — 검색 색인 제외
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}) {
+  const { code } = await params;
+  const team = await getTeamByCode(code);
+  return {
+    title: team ? `${team.name} — 팀 사주 대시보드` : "팀 대시보드",
+    robots: { index: false, follow: false },
+  };
+}
+
 const ELEMENTS: Element[] = ["목", "화", "토", "금", "수"];
 const ELEMENT_HANJA: Record<Element, string> = {
   목: "木", 화: "火", 토: "土", 금: "金", 수: "水",

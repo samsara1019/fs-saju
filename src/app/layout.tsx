@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo_Black, Work_Sans, Space_Mono } from "next/font/google";
 import Link from "next/link";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const archivoBlack = Archivo_Black({
@@ -19,8 +20,48 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FS SAJU — 풋살팀 사주 궁합 분석",
-  description: "팀원들의 사주로 알아보는 풋살 팀 케미. 베스트 패스 라인과 추천 포지션까지.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "FS SAJU — 풋살팀 사주 궁합 · 팀 사주 분석",
+    template: "%s | FS SAJU",
+  },
+  description:
+    "풋살팀 사주 분석 서비스 FS SAJU. 팀원들의 생년월일(양력·음력)만 입력하면 사주 오행으로 풋살팀 궁합, 베스트 패스 라인, 포지션 추천까지. 팀 코드로 간편하게 팀원을 초대하세요.",
+  keywords: [
+    "팀 사주 분석",
+    "풋살팀 사주",
+    "풋살팀 궁합",
+    "팀 궁합 테스트",
+    "사주 궁합",
+    "오행 궁합",
+    "풋살 포지션 추천",
+    "팀 케미 분석",
+    "모임 궁합",
+    "풋살",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "ko_KR",
+    url: siteUrl,
+    siteName: "FS SAJU",
+    title: "FS SAJU — 풋살팀 사주 궁합 · 팀 사주 분석",
+    description:
+      "생년월일만으로 풋살팀 궁합을 분석합니다. 오행 밸런스, 패스 라인, 포지션 추천까지.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FS SAJU — 풋살팀 사주 궁합 · 팀 사주 분석",
+    description:
+      "생년월일만으로 풋살팀 궁합을 분석합니다. 오행 밸런스, 패스 라인, 포지션 추천까지.",
+  },
+  robots: { index: true, follow: true },
+  verification: {
+    // 서치콘솔(URL 접두어 속성) HTML 태그 검증값 — Vercel 환경변수로 주입
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION
+      ? { "naver-site-verification": process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION }
+      : undefined,
+  },
 };
 
 export default function RootLayout({
