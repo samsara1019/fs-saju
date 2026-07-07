@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTeamByCode, listMembers } from "@/lib/db";
 import JoinForm from "@/components/JoinForm";
@@ -40,6 +41,16 @@ export default async function JoinPage({
 
       <div className="mt-6 border-[3px] border-black p-5">
         <JoinForm code={team.code} />
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-3 border-[3px] border-black p-4">
+        <p className="text-sm">이미 참가하셨나요?</p>
+        <Link
+          href={`/team/${team.code}`}
+          className="shrink-0 border-[3px] border-black bg-white px-4 py-2 text-xs font-bold uppercase tracking-[1px] transition-colors hover:bg-black hover:text-white"
+        >
+          팀 페이지로 가기 →
+        </Link>
       </div>
     </div>
   );
