@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@/lib/analytics";
 
 export default function ShareCode({ code }: { code: string }) {
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
@@ -9,6 +10,7 @@ export default function ShareCode({ code }: { code: string }) {
     const text =
       kind === "code" ? code : `${window.location.origin}/join/${code}`;
     await navigator.clipboard.writeText(text);
+    track("share_copy", { kind });
     setCopied(kind);
     setTimeout(() => setCopied(null), 1500);
   }

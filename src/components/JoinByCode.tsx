@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { track } from "@/lib/analytics";
 
 export default function JoinByCode() {
   const router = useRouter();
@@ -13,7 +14,10 @@ export default function JoinByCode() {
       onSubmit={(e) => {
         e.preventDefault();
         const trimmed = code.trim().toUpperCase();
-        if (trimmed) router.push(`/join/${trimmed}`);
+        if (trimmed) {
+          track("join_code_submit");
+          router.push(`/join/${trimmed}`);
+        }
       }}
     >
       <input

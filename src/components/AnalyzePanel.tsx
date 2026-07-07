@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { track } from "@/lib/analytics";
 
 export default function AnalyzePanel({
   code,
@@ -26,6 +27,7 @@ export default function AnalyzePanel({
     setLoading(true);
     setError(null);
     setNotice(null);
+    track("analyze_start", { member_count: memberCount });
     try {
       const res = await fetch(`/api/teams/${code}/analyze`, { method: "POST" });
       const data = await res.json();
@@ -33,7 +35,9 @@ export default function AnalyzePanel({
       setContent(data.content);
       setUpToDate(true);
       if (data.upToDate && data.message) setNotice(data.message);
+      track("analyze_complete", { member_count: memberCount, cached: Boolean(data.upToDate) });
     } catch (e) {
+      track("analyze_error", { member_count: memberCount });
       setError(e instanceof Error ? e.message : "분석에 실패했습니다.");
     } finally {
       setLoading(false);

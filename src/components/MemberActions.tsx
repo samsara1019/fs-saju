@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import MemberFields, { MemberInput } from "@/components/MemberFields";
+import { track } from "@/lib/analytics";
 
 export interface EditableMember {
   id: string;
@@ -50,6 +51,7 @@ export default function MemberActions({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "수정에 실패했습니다.");
+      track("member_edit");
       setEditing(false);
       router.refresh();
     } catch (e) {
@@ -69,6 +71,7 @@ export default function MemberActions({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "삭제에 실패했습니다.");
+      track("member_delete");
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "삭제에 실패했습니다.");

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import MemberFields, { emptyMember, MemberInput } from "@/components/MemberFields";
+import { track } from "@/lib/analytics";
 
 export default function CreateTeamPage() {
   const router = useRouter();
@@ -32,6 +33,11 @@ export default function CreateTeamPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "팀 생성에 실패했습니다.");
+      track("team_create", {
+        calendar: owner.calendar,
+        has_birth_time: Boolean(owner.birthTime),
+        position: owner.position,
+      });
       router.push(`/team/${data.code}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "팀 생성에 실패했습니다.");
