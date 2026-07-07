@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Archivo_Black, Work_Sans, Space_Mono } from "next/font/google";
 import Link from "next/link";
-import { siteUrl } from "@/lib/site";
+import Script from "next/script";
+import { siteUrl, gtmId } from "@/lib/site";
 import "./globals.css";
 
 const archivoBlack = Archivo_Black({
@@ -75,6 +76,23 @@ export default function RootLayout({
       className={`${archivoBlack.variable} ${workSans.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-white font-sans text-black">
+        {/* Google Tag Manager (noscript) — body 최상단 */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
+        {/* Google Tag Manager */}
+        <Script id="gtm" strategy="afterInteractive">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${gtmId}');`}
+        </Script>
         <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-4 sm:px-6">
           <header className="flex items-center justify-between border-b-[5px] border-black py-6">
             <Link href="/" className="font-headline text-xl uppercase tracking-tight">

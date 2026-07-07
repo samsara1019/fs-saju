@@ -3,3 +3,6 @@
 export const siteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://fs-saju.vercel.app"
 ).replace(/\/+$/, "");
+
+// Google Tag Manager 컨테이너 ID
+export const gtmId = process.env.NEXT_PUBLIC_GTM_ID ?? "GTM-WNVWNCML";
