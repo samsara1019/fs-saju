@@ -25,6 +25,7 @@ create table if not exists analyses (
   team_id uuid not null references teams(id) on delete cascade,
   content text not null,
   member_count int not null,
+  fingerprint text, -- 분석 당시 팀 구성 해시 (동일 구성 재분석 방지)
   created_at timestamptz not null default now()
 );
 

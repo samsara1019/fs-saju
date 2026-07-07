@@ -2,6 +2,7 @@
 // 사주 계산(만세력)은 코드에서 정확히 끝내고, LLM에는 계산된 사주 데이터를 주고
 // 풋살 맥락의 해석(포지션 추천, 패스 라인, 팀 운영 조언)만 맡긴다.
 // GEMINI_API_KEY가 없으면 목(mock) 분석을 반환한다.
+import { createHash } from "crypto";
 import { GoogleGenAI } from "@google/genai";
 import type { Member } from "./db";
 import {
@@ -16,6 +17,20 @@ import {
   CalendarType,
   CALENDAR_LABEL,
 } from "./saju";
+
+/**
+ * 팀 구성의 지문 — 분석 결과에 영향을 주는 모든 입력(팀 이름, 멤버의 별명/생일/시간/달력/포지션)의
+ * 해시. 마지막 분석과 지문이 같으면 결과도 같을 것이므로 LLM을 다시 호출하지 않는다.
+ */
+export function teamFingerprint(teamName: string, members: Member[]): string {
+  const data = members
+    .map((m) => [m.name, m.birth_date, m.birth_time ?? "", m.calendar ?? "solar", m.position ?? ""])
+    .sort((a, b) => a.join("|").localeCompare(b.join("|")));
+  return createHash("sha256")
+    .update(JSON.stringify([teamName, data]))
+    .digest("hex")
+    .slice(0, 32);
+}
 
 export interface MemberWithSaju {
   member: Member;

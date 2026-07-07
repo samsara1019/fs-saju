@@ -34,6 +34,7 @@ export interface Analysis {
   team_id: string;
   content: string;
   member_count: number;
+  fingerprint: string | null; // 분석 당시 팀 구성의 해시 — 같으면 재분석 불필요
   created_at: string;
 }
 
@@ -173,7 +174,8 @@ export async function deleteMember(teamId: string, memberId: string): Promise<bo
 export async function saveAnalysis(
   teamId: string,
   content: string,
-  memberCount: number
+  memberCount: number,
+  fingerprint: string
 ): Promise<Analysis> {
   const sb = getSupabase();
   if (!sb) {
@@ -182,6 +184,7 @@ export async function saveAnalysis(
       team_id: teamId,
       content,
       member_count: memberCount,
+      fingerprint,
       created_at: new Date().toISOString(),
     };
     const list = memStore().analyses.get(teamId) ?? [];
@@ -191,7 +194,7 @@ export async function saveAnalysis(
   }
   const { data, error } = await sb
     .from("analyses")
-    .insert({ team_id: teamId, content, member_count: memberCount })
+    .insert({ team_id: teamId, content, member_count: memberCount, fingerprint })
     .select()
     .single();
   if (error) throw new Error(`분석 저장 실패: ${error.message}`);

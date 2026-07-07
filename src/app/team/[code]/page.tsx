@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTeamByCode, listMembers, getLatestAnalysis, usingMemoryStore } from "@/lib/db";
-import { buildTeamData } from "@/lib/llm";
+import { buildTeamData, teamFingerprint } from "@/lib/llm";
 import {
   formatPillars,
   lunarToSolar,
@@ -46,6 +46,8 @@ export default async function TeamPage({
   const members = await listMembers(team.id);
   const { withSaju, pairs, teamSummary } = buildTeamData(members);
   const latest = await getLatestAnalysis(team.id);
+  const fingerprint = teamFingerprint(team.name, members);
+  const upToDate = latest?.fingerprint === fingerprint;
   const maxCount = Math.max(1, ...ELEMENTS.map((el) => teamSummary.counts[el]));
 
   return (
@@ -207,9 +209,11 @@ export default async function TeamPage({
       )}
 
       <AnalyzePanel
+        key={fingerprint}
         code={team.code}
         memberCount={members.length}
         initialContent={latest?.content ?? null}
+        initialUpToDate={upToDate}
       />
     </div>
   );
