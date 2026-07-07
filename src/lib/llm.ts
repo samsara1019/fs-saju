@@ -13,6 +13,8 @@ import {
   SajuResult,
   FutsalProfile,
   TeamElementSummary,
+  CalendarType,
+  CALENDAR_LABEL,
 } from "./saju";
 
 export interface MemberWithSaju {
@@ -36,7 +38,11 @@ export function buildTeamData(members: Member[]): {
   teamSummary: TeamElementSummary;
 } {
   const withSaju = members.map((member) => {
-    const saju = calculateSaju(member.birth_date, member.birth_time);
+    const saju = calculateSaju(
+      member.birth_date,
+      member.birth_time,
+      (member.calendar ?? "solar") as CalendarType
+    );
     return { member, saju, profile: futsalProfile(saju) };
   });
 
@@ -60,8 +66,9 @@ function memberBrief({ member, saju, profile }: MemberWithSaju): string {
   const counts = Object.entries(saju.elementCounts)
     .map(([e, c]) => `${e}${c}`)
     .join(" ");
+  const calendarLabel = CALENDAR_LABEL[(member.calendar ?? "solar") as CalendarType];
   return [
-    `- ${member.name} (${member.birth_date}${member.birth_time ? ` ${member.birth_time}` : ", 시간 미상"}, 희망 포지션: ${member.position ?? "무관"})`,
+    `- ${member.name} (${calendarLabel} ${member.birth_date}${member.birth_time ? ` ${member.birth_time}` : ", 시간 미상"}, 희망 포지션: ${member.position ?? "무관"})`,
     `  사주: ${formatPillars(saju)} / 띠: ${saju.animal}띠`,
     `  일간: ${saju.dayMaster.stem}(${saju.dayMaster.yinYang}${saju.dayMaster.element}) / 오행 분포: ${counts} / 강한 오행: ${saju.dominantElement} / 부족한 오행: ${saju.lackingElements.length ? saju.lackingElements.join(",") : "없음"}`,
     `  오행 기반 역할: ${profile.role} / 계산된 추천 포지션: ${profile.positions.join(", ")} / 스타일: ${profile.style}`,

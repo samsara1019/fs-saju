@@ -25,6 +25,7 @@ export default function CreateTeamPage() {
             name: owner.name,
             birthDate: owner.birthDate,
             birthTime: owner.birthTime || null,
+            calendar: owner.calendar,
             position: owner.position === "무관" ? null : owner.position,
           },
         }),

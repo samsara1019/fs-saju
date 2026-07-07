@@ -1,10 +1,17 @@
 import { notFound } from "next/navigation";
 import { getTeamByCode, listMembers, getLatestAnalysis, usingMemoryStore } from "@/lib/db";
 import { buildTeamData } from "@/lib/llm";
-import { formatPillars, Element } from "@/lib/saju";
+import {
+  formatPillars,
+  lunarToSolar,
+  Element,
+  CalendarType,
+  CALENDAR_LABEL,
+} from "@/lib/saju";
 import ShareCode from "@/components/ShareCode";
 import AnalyzePanel from "@/components/AnalyzePanel";
 import AutoRefresh from "@/components/AutoRefresh";
+import MemberActions from "@/components/MemberActions";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +70,9 @@ export default async function TeamPage({
           선수단 <span className="font-mono">{members.length}</span>
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {withSaju.map(({ member, saju, profile }) => (
+          {withSaju.map(({ member, saju, profile }) => {
+            const calendar = (member.calendar ?? "solar") as CalendarType;
+            return (
             <div key={member.id} className="border-[3px] border-black">
               <div className="flex items-center justify-between border-b-[3px] border-black bg-black px-4 py-2 text-white">
                 <span className="font-headline text-sm uppercase">
@@ -73,6 +82,12 @@ export default async function TeamPage({
                 <span className="font-mono text-xs">{member.position ?? "포지션 무관"}</span>
               </div>
               <div className="grid gap-2 p-4">
+                <p className="font-mono text-xs">
+                  {CALENDAR_LABEL[calendar]} {member.birth_date}
+                  {calendar !== "solar" &&
+                    ` (양력 ${lunarToSolar(member.birth_date, calendar === "lunar_leap")})`}
+                  {member.birth_time && ` ${member.birth_time}`}
+                </p>
                 <p className="font-mono text-xs">{formatPillars(saju)}</p>
                 <p className="text-xs">
                   {saju.animal}띠 · 일간 {saju.dayMaster.stem}({saju.dayMaster.yinYang}
@@ -105,8 +120,20 @@ export default async function TeamPage({
                   </p>
                 </div>
               </div>
+              <MemberActions
+                code={team.code}
+                member={{
+                  id: member.id,
+                  name: member.name,
+                  birth_date: member.birth_date,
+                  birth_time: member.birth_time,
+                  calendar,
+                  position: member.position,
+                }}
+              />
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

@@ -1,9 +1,18 @@
 // 사주 계산 — lunar-javascript의 팔자(八字) 계산을 기반으로
 // 한글 변환, 오행 분포, 페어 궁합 점수를 산출한다.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { Solar } = require("lunar-javascript");
+const { Solar, Lunar } = require("lunar-javascript");
 
 export type Element = "목" | "화" | "토" | "금" | "수";
+
+/** solar: 양력 / lunar: 음력 평달 / lunar_leap: 음력 윤달 */
+export type CalendarType = "solar" | "lunar" | "lunar_leap";
+
+export const CALENDAR_LABEL: Record<CalendarType, string> = {
+  solar: "양력",
+  lunar: "음력",
+  lunar_leap: "음력(윤달)",
+};
 
 export interface Pillar {
   stem: string; // 천간 (한글)
@@ -74,11 +83,30 @@ function toPillar(ganzhi: string): Pillar {
 }
 
 /**
- * birthDate: "YYYY-MM-DD", birthTime: "HH:mm" 또는 null.
+ * 음력 생일을 양력 "YYYY-MM-DD"로 변환한다. 존재하지 않는 음력 날짜(30일이 없는 달,
+ * 윤달이 없는 해 등)면 lunar-javascript가 던지는 에러를 그대로 전파한다.
+ */
+export function lunarToSolar(birthDate: string, leap: boolean): string {
+  const [y, m, d] = birthDate.split("-").map(Number);
+  const lunar = Lunar.fromYmd(y, leap ? -m : m, d);
+  const solar = lunar.getSolar();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${solar.getYear()}-${pad(solar.getMonth())}-${pad(solar.getDay())}`;
+}
+
+/**
+ * birthDate: "YYYY-MM-DD", birthTime: "HH:mm" 또는 null, calendar: 양력/음력/음력(윤달).
+ * 음력이면 양력으로 변환 후 계산한다.
  * 시간을 모르면 정오로 계산하되 시주는 제외한다 (자시 경계에 걸릴 위험이 가장 적은 시각).
  */
-export function calculateSaju(birthDate: string, birthTime: string | null): SajuResult {
-  const [y, m, d] = birthDate.split("-").map(Number);
+export function calculateSaju(
+  birthDate: string,
+  birthTime: string | null,
+  calendar: CalendarType = "solar"
+): SajuResult {
+  const solarDate =
+    calendar === "solar" ? birthDate : lunarToSolar(birthDate, calendar === "lunar_leap");
+  const [y, m, d] = solarDate.split("-").map(Number);
   const [hh, mm] = birthTime ? birthTime.split(":").map(Number) : [12, 0];
 
   const solar = Solar.fromYmdHms(y, m, d, hh, mm, 0);

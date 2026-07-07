@@ -14,6 +14,7 @@ create table if not exists members (
   name text not null,
   birth_date date not null,
   birth_time text,
+  calendar text not null default 'solar', -- solar | lunar | lunar_leap
   position text,
   is_owner boolean not null default false,
   created_at timestamptz not null default now()

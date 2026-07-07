@@ -22,6 +22,7 @@ export default function JoinForm({ code }: { code: string }) {
           name: member.name,
           birthDate: member.birthDate,
           birthTime: member.birthTime || null,
+          calendar: member.calendar,
           position: member.position === "무관" ? null : member.position,
         }),
       });

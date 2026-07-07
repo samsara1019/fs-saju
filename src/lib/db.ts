@@ -17,12 +17,17 @@ export interface Member {
   id: string;
   team_id: string;
   name: string;
-  birth_date: string; // YYYY-MM-DD
+  birth_date: string; // YYYY-MM-DD (calendar 기준의 날짜)
   birth_time: string | null; // HH:mm
-  position: string | null; // 골레이로 | 픽소 | 알라 | 피보 | 무관
+  calendar: string; // solar | lunar | lunar_leap
+  position: string | null; // 골레이로 | 피보 | 아라 | 픽소 | null(무관)
   is_owner: boolean;
   created_at: string;
 }
+
+export type MemberPatch = Partial<
+  Pick<Member, "name" | "birth_date" | "birth_time" | "calendar" | "position">
+>;
 
 export interface Analysis {
   id: string;
@@ -120,6 +125,49 @@ export async function listMembers(teamId: string): Promise<Member[]> {
     .order("created_at", { ascending: true });
   if (error) throw new Error(`멤버 조회 실패: ${error.message}`);
   return (data ?? []) as Member[];
+}
+
+export async function updateMember(
+  teamId: string,
+  memberId: string,
+  patch: MemberPatch
+): Promise<Member | null> {
+  const sb = getSupabase();
+  if (!sb) {
+    const list = memStore().members.get(teamId) ?? [];
+    const member = list.find((m) => m.id === memberId);
+    if (!member) return null;
+    Object.assign(member, patch);
+    return member;
+  }
+  const { data, error } = await sb
+    .from("members")
+    .update(patch)
+    .eq("id", memberId)
+    .eq("team_id", teamId)
+    .select()
+    .maybeSingle();
+  if (error) throw new Error(`멤버 수정 실패: ${error.message}`);
+  return data as Member | null;
+}
+
+export async function deleteMember(teamId: string, memberId: string): Promise<boolean> {
+  const sb = getSupabase();
+  if (!sb) {
+    const list = memStore().members.get(teamId) ?? [];
+    const idx = list.findIndex((m) => m.id === memberId);
+    if (idx === -1) return false;
+    list.splice(idx, 1);
+    return true;
+  }
+  const { data, error } = await sb
+    .from("members")
+    .delete()
+    .eq("id", memberId)
+    .eq("team_id", teamId)
+    .select("id");
+  if (error) throw new Error(`멤버 삭제 실패: ${error.message}`);
+  return (data ?? []).length > 0;
 }
 
 export async function saveAnalysis(
