@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PairInfo } from "@/lib/llm";
+import { scoreColor, circleLayout, LABEL_T } from "@/lib/graphLayout";
 
 // 패스 궁합 관계 그래프 — 멤버를 원형으로 배치하고 모든 페어를 선으로 연결한다.
 // 선 색상·굵기는 점수 구간(RawBlock 상태색: 초록/주황/빨강), 선 위에 점수 라벨.
@@ -12,10 +13,6 @@ const CX = SIZE / 2;
 const CY = SIZE / 2;
 const R = 132;
 const DIM = 0.1; // 강조되지 않은 요소의 투명도
-
-function scoreColor(score: number): string {
-  return score >= 65 ? "#008000" : score >= 45 ? "#FFA500" : "#FF0000";
-}
 
 type Focus =
   | { type: "node"; name: string }
@@ -33,12 +30,7 @@ export default function ChemistryGraph({
 }) {
   const [focus, setFocus] = useState<Focus>(null);
 
-  const pos = new Map(
-    names.map((name, i) => {
-      const angle = -Math.PI / 2 + (2 * Math.PI * i) / names.length;
-      return [name, { x: CX + R * Math.cos(angle), y: CY + R * Math.sin(angle) }];
-    })
-  );
+  const pos = circleLayout(names, CX, CY, R);
 
   function edgeActive(p: PairInfo): boolean {
     if (!focus) return true;
@@ -64,9 +56,7 @@ export default function ChemistryGraph({
   const toggleEdge = (key: string) =>
     setFocus((f) => (f?.type === "edge" && f.key === key ? null : { type: "edge", key }));
 
-  // 라벨을 선의 중점(0.5)이 아니라 0.38 지점에 둬서, 중심을 지나는 대각선들의
-  // 라벨이 한가운데서 겹치지 않게 한다.
-  const T = 0.38;
+  const T = LABEL_T;
 
   return (
     <div>

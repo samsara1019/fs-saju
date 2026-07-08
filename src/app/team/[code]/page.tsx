@@ -13,6 +13,7 @@ import AnalyzePanel from "@/components/AnalyzePanel";
 import AutoRefresh from "@/components/AutoRefresh";
 import MemberActions from "@/components/MemberActions";
 import ChemistryGraph from "@/components/ChemistryGraph";
+import ShareGraphButton from "@/components/ShareGraphButton";
 
 export const dynamic = "force-dynamic";
 
@@ -186,9 +187,14 @@ export default async function TeamPage({
 
       {pairs.length > 0 ? (
         <section>
-          <h2 className="mb-4 border-b-[3px] border-black pb-2 font-headline text-xl uppercase">
-            패스 궁합
-          </h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-black pb-2">
+            <h2 className="font-headline text-xl uppercase">패스 궁합</h2>
+            <ShareGraphButton
+              teamName={team.name}
+              names={withSaju.map((w) => w.member.name)}
+              pairs={pairs}
+            />
+          </div>
           <div className="border-[3px] border-black p-4">
             <ChemistryGraph
               names={withSaju.map((w) => w.member.name)}
