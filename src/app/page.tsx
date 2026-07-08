@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import JoinByCode from "@/components/JoinByCode";
+import ContactLink from "@/components/ContactLink";
 import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -51,6 +52,10 @@ export default function Home() {
           새 팀 만들기 (방장)
         </Link>
         <JoinByCode />
+        <p className="text-center text-xs">
+          내 팀 코드를 잊어버렸다면?{" "}
+          <ContactLink location="home">💬 카톡으로 문의하세요</ContactLink>
+        </p>
       </div>
 
       <div className="grid gap-0 border-[3px] border-black sm:grid-cols-3">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo_Black, Work_Sans, Space_Mono } from "next/font/google";
 import Link from "next/link";
 import Script from "next/script";
+import ContactLink from "@/components/ContactLink";
 import { siteUrl, gtmId } from "@/lib/site";
 import "./globals.css";
 
@@ -103,8 +104,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </span>
           </header>
           <main className="flex-1 pb-16 pt-8">{children}</main>
-          <footer className="border-t-[3px] border-black py-6 text-center text-xs">
-            재미로 보는 사주 분석입니다 — 진짜 실력은 연습이 만듭니다 🏃
+          <footer className="grid gap-2 border-t-[3px] border-black py-6 text-center text-xs">
+            <p>재미로 보는 사주 분석입니다 — 진짜 실력은 연습이 만듭니다 🏃</p>
+            <p>
+              질문이 있으신가요?{" "}
+              <ContactLink location="footer">💬 카톡 채널로 문의하기</ContactLink>
+            </p>
           </footer>
         </div>
       </body>
