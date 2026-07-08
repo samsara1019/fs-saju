@@ -46,26 +46,35 @@ export default function AnalyzePanel({
 
   const analyzed = Boolean(content);
   const blocked = upToDate && analyzed;
+  // 분석 이후 멤버가 추가/수정/삭제되어 리포트가 낡은 상태 — 재분석을 유도한다
+  const stale = analyzed && !upToDate;
 
   return (
     <section>
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-[3px] border-black pb-2">
         <h2 className="font-headline text-xl uppercase">AI 전술 리포트</h2>
-        <button
-          onClick={analyze}
-          disabled={loading || memberCount < 1 || blocked}
-          className="border-[3px] border-black bg-black px-4 py-2 text-sm font-bold uppercase tracking-[1px] text-white transition-colors hover:bg-white hover:text-black disabled:border-[#CCCCCC] disabled:bg-[#F0F0F0] disabled:text-neutral-400"
-        >
-          {loading
-            ? "사주 푸는 중..."
-            : blocked
-              ? "최적 분석 완료 ✓"
-              : analyzed
-                ? "다시 분석하기"
-                : memberCount === 1
-                  ? "내 풋살 사주 보기"
-                  : "팀 분석 시작"}
-        </button>
+        <div className="relative">
+          {stale && !loading && (
+            <div className="pointer-events-none absolute -top-11 right-0 animate-bounce whitespace-nowrap border-[3px] border-black bg-black px-3 py-1.5 text-xs font-bold text-white">
+              팀이 바뀌었어요! 다시 분석해보세요 👇
+            </div>
+          )}
+          <button
+            onClick={analyze}
+            disabled={loading || memberCount < 1 || blocked}
+            className="border-[3px] border-black bg-black px-4 py-2 text-sm font-bold uppercase tracking-[1px] text-white transition-colors hover:bg-white hover:text-black disabled:border-[#CCCCCC] disabled:bg-[#F0F0F0] disabled:text-neutral-400"
+          >
+            {loading
+              ? "사주 푸는 중..."
+              : blocked
+                ? "최적 분석 완료 ✓"
+                : analyzed
+                  ? "다시 분석하기"
+                  : memberCount === 1
+                    ? "내 풋살 사주 보기"
+                    : "팀 분석 시작"}
+          </button>
+        </div>
       </div>
 
       {blocked && (
