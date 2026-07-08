@@ -12,6 +12,7 @@ import ShareCode from "@/components/ShareCode";
 import AnalyzePanel from "@/components/AnalyzePanel";
 import AutoRefresh from "@/components/AutoRefresh";
 import MemberActions from "@/components/MemberActions";
+import ChemistryGraph from "@/components/ChemistryGraph";
 
 export const dynamic = "force-dynamic";
 
@@ -186,31 +187,42 @@ export default async function TeamPage({
       {pairs.length > 0 ? (
         <section>
           <h2 className="mb-4 border-b-[3px] border-black pb-2 font-headline text-xl uppercase">
-            패스 궁합 랭킹
+            패스 궁합
           </h2>
-          <div className="grid gap-3">
-            {pairs.map((p) => (
-              <div key={`${p.a}-${p.b}`} className="border-[3px] border-black p-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="min-w-0 flex-1 truncate text-sm font-bold">
-                    {p.a} ↔ {p.b}
-                  </span>
-                  <span
-                    className={`border-2 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[1px] ${relationChipClass(p.relationType)}`}
-                  >
-                    {p.relationType}
-                  </span>
-                  <span className="font-mono text-sm font-bold">{p.score}점</span>
-                </div>
-                <div className="mt-2 h-3 w-full border-2 border-black">
-                  <div className="h-full bg-black" style={{ width: `${p.score}%` }} />
-                </div>
-                {p.reasons[0] && (
-                  <p className="mt-2 text-xs leading-relaxed">{p.reasons[0]}</p>
-                )}
-              </div>
-            ))}
+          <div className="border-[3px] border-black p-4">
+            <ChemistryGraph
+              names={withSaju.map((w) => w.member.name)}
+              pairs={pairs}
+            />
           </div>
+          <details className="mt-3 border-[3px] border-black">
+            <summary className="cursor-pointer p-4 text-sm font-bold uppercase tracking-[1px] hover:bg-black hover:text-white">
+              페어별 상세 보기 ({pairs.length}개)
+            </summary>
+            <div className="grid gap-3 border-t-[3px] border-black p-4">
+              {pairs.map((p) => (
+                <div key={`${p.a}-${p.b}`} className="border-[3px] border-black p-4">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="min-w-0 flex-1 truncate text-sm font-bold">
+                      {p.a} ↔ {p.b}
+                    </span>
+                    <span
+                      className={`border-2 px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-[1px] ${relationChipClass(p.relationType)}`}
+                    >
+                      {p.relationType}
+                    </span>
+                    <span className="font-mono text-sm font-bold">{p.score}점</span>
+                  </div>
+                  <div className="mt-2 h-3 w-full border-2 border-black">
+                    <div className="h-full bg-black" style={{ width: `${p.score}%` }} />
+                  </div>
+                  {p.reasons[0] && (
+                    <p className="mt-2 text-xs leading-relaxed">{p.reasons[0]}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </details>
         </section>
       ) : (
         <section className="border-[3px] border-black p-5">
